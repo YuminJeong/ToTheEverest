@@ -1,4 +1,14 @@
-# ToTheEverest
+# ToTheEverest!
+
+
+
+https://youtu.be/0pis01MIKf8
+![20230712_11542002](https://github.com/YuminJeong/ToTheEverest/assets/138415853/3ee0e8b2-1800-437d-8217-38baf9a93b92)
+![Uploading 화면 캡처 2023-07-12 115724.png…]()
+![Uploading 20230712_11555635.png…]()
+[화면 캡처 2023-07-12 115958](https://github.com/YuminJeong/ToTheEverest/assets/138415853/87527a37-ad15-4c91-84f7-8867ffe7e6e0)
+![Uploading 화면 캡처 2023-07-12 115904.png…]()
+
 This is a jumping flatformer game with Doodle Jump as a reference.
 The player jumps up while stepping on the platform.
 I chose the main character as a snowman.
