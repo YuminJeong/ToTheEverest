@@ -68,7 +68,6 @@ class Player(pg.sprite.Sprite):
         self.jump_power = PLAYER_JUMP_POWER
         self.jump_timer = 0
         self.powered_up = False
-        self.start_time = pg.time.get_ticks()  # Starting time
 
     def update(self):
         self.acc = vec(0, PLAYER_GRAV)
@@ -120,10 +119,6 @@ class Player(pg.sprite.Sprite):
         # If the jump timer has expired, reset the jump power to the original value
         if self.jump_timer > 0 and pg.time.get_ticks() - self.jump_timer >= 3000:
             self.jump_power = PLAYER_JUMP_POWER
-
-        # Check if the player reaches the target score
-        if self.game.PLAYER_SCORE >= 8849:
-            self.game.playing = False
 
     def jump(self):
         # If the player is on a platform then it is allowed to jump
@@ -181,6 +176,9 @@ class Game:
         pg.mixer.music.set_volume(0.5)
         pg.mixer.music.play(-1)
 
+        self.font = pg.font.SysFont("Comic Sans Ms", 30)
+        self.time = 0
+
     def new(self):
         # Start a New Game
 
@@ -192,14 +190,11 @@ class Game:
         self.player = Player(self)
         self.all_sprites.add(self.player)
         self.PLAYER_SCORE = 0
+        self.time = 0
 
         # Platform Objects
-        for i, plat in enumerate(PLATFORM_LIST):
-            has_scarf = random.random() < 0.05  # Randomly determine if the platform has a scarf
-            if i == 3:
-                plat = list(plat)
-                plat[1] += 10  # Increase y-position by 10 for the specific platform
-                plat = tuple(plat)
+        for plat in PLATFORM_LIST:
+            has_scarf = random.random() < 0.1  # Randomly determine if the platform has a scarf
             p = Platform(*plat, has_scarf)
             p.set_game(self)  # Set the game object for the platform
             self.platforms.add(p)
@@ -211,6 +206,7 @@ class Game:
     def run(self):
         # Game Loop
         self.playing = True
+        start_time = pg.time.get_ticks()
         while self.playing:
             self.clock.tick(FPS)
             self.events()
@@ -218,6 +214,16 @@ class Game:
             self.draw()
             if self.gameOver:
                 self.show_go_screen()
+
+            current_time = pg.time.get_ticks()
+            elapsed_time = current_time - start_time
+            if elapsed_time >= 1000:
+                start_time = current_time
+                if self.background_position.y < -100:
+                    self.time += 1
+
+                else:
+                    self.time += 0
 
     def update(self):
         # Game Loop - Update
@@ -249,7 +255,7 @@ class Game:
         # Spawn New platforms
         while len(self.platforms) < 6:
             p = Platform(random.randint(0, 500), -(random.randint(20, 100)), PLATFORM_WIDTH, PLATFORM_HEIGHT,
-                         (200, 200, 200), random.random() < 0.05)
+                         (200, 200, 200), random.random() < 0.1)
             p.set_game(self)  # Set the game object for the platform
             self.platforms.add(p)
             self.all_sprites.add(p)
@@ -277,6 +283,8 @@ class Game:
             self.display_text((str(self.PLAYER_SCORE) + "m"), 10, 0, 30, (50, 20, 30))
         else:
             self.display_text((str(self.PLAYER_SCORE) + "m"), 10, 0, 30, (255, 0, 220))
+
+        self.display_text((str(self.time) + "sec"), 10, 30, 30, (50, 20, 30))  # Display time
 
         pg.display.flip()
 
@@ -315,9 +323,3 @@ while g.running:
     g.new()
     g.run()
     g.show_go_screen()
-
-# Calculate the elapsed time if the target score is reached
-if g.player.gameOver:
-    end_time = pg.time.get_ticks()
-    elapsed_time = (end_time - g.player.start_time) / 1000
-    print(f"Elapsed Time: {elapsed_time} seconds")
